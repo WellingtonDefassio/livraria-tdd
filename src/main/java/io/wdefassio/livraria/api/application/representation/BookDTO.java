@@ -17,13 +17,14 @@ public class BookDTO {
     @NotBlank
     private String isbn;
 
-    public BookDTO(String title, String author, String isbn) {
+    public BookDTO(Long id, String title, String author, String isbn) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
     }
 
     public Book toModel() {
-        return new Book(title, author, isbn);
+        return new Book(id, title, author, isbn);
     }
 }

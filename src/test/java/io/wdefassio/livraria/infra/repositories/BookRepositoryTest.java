@@ -35,23 +35,23 @@ public class BookRepositoryTest {
     }
 
     @Test
-    @DisplayName("sould return a not empty optinal when isbn exists in database")
+    @DisplayName("sould return a true when isbn exists in database")
     public void isbnExisting() {
         entityManager.persist(book);
-        Optional<Book> optionalBook = bookRepository.findByIsbn(book.getIsbn());
-        Assertions.assertThat(optionalBook).isNotEmpty();
+        Boolean bookExists = bookRepository.existsByIsbn(book.getIsbn());
+        Assertions.assertThat(bookExists).isTrue();
     }
     @Test
     @DisplayName("sould return a  empty optinal when isbn does not exists in database")
     public void isbnNotExisting() {
-        Optional<Book> optionalBook = bookRepository.findByIsbn(book.getIsbn());
-        Assertions.assertThat(optionalBook).isEmpty();
+        Boolean bookExists = bookRepository.existsByIsbn(book.getIsbn());
+        Assertions.assertThat(bookExists).isFalse();
     }
 
 
 
     public void initialValues() {
-        book = new Book("As aventuras test", "Manoel", "123");
+        book = new Book(1L,"As aventuras test", "Manoel", "123");
     }
 
 }

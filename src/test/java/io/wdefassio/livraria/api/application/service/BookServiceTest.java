@@ -13,8 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Optional;
-
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class BookServiceTest {
@@ -33,7 +31,9 @@ public class BookServiceTest {
     @Test
     @DisplayName("should save a book")
     public void saveCorrectBook() {
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(Boolean.FALSE);
         Mockito.when(repository.save(book)).thenReturn(book);
+
 
         Book savedBook = bookService.save(book);
 
@@ -50,8 +50,8 @@ public class BookServiceTest {
     @DisplayName("should not save a book with existing isbn")
     public void saveDuplicateIsbnBook() {
 
-        Mockito.when(repository.findByIsbn(Mockito.anyString())).thenReturn(Optional.of(book));
-
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(Boolean.TRUE);
+        book.setId(null);
         Throwable exception = Assertions.catchThrowable(() -> bookService.save(book));
         Assertions.assertThat(exception).isInstanceOf(BookAlreadyExistsException.class)
                 .hasMessage("isbn already exists");
@@ -60,7 +60,6 @@ public class BookServiceTest {
     }
 
     public void initialValues() {
-        book = new Book("As aventuras test", "Manoel", "123");
-        book.setId(1L);
+        book = new Book(1L,"As aventuras test", "Manoel", "123");
     }
 }
