@@ -1,6 +1,7 @@
 package io.wdefassio.livraria.api.application.service;
 
 import io.wdefassio.livraria.api.domain.entity.Book;
+import io.wdefassio.livraria.api.exceptions.BookAlreadyExistsException;
 import io.wdefassio.livraria.api.infra.repositories.BookRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,8 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -29,7 +32,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("should save a book")
-    public void saveBookTest() {
+    public void saveCorrectBook() {
         Mockito.when(repository.save(book)).thenReturn(book);
 
         Book savedBook = bookService.save(book);
@@ -41,6 +44,19 @@ public class BookServiceTest {
         Assertions.assertThat(savedBook.getIsbn()).isEqualTo("123");
 
 
+    }
+
+    @Test
+    @DisplayName("should not save a book with existing isbn")
+    public void saveDuplicateIsbnBook() {
+
+        Mockito.when(repository.findByIsbn(Mockito.anyString())).thenReturn(Optional.of(book));
+
+        Throwable exception = Assertions.catchThrowable(() -> bookService.save(book));
+        Assertions.assertThat(exception).isInstanceOf(BookAlreadyExistsException.class)
+                .hasMessage("isbn already exists");
+
+        Mockito.verify(repository, Mockito.never()).save(book);
     }
 
     public void initialValues() {

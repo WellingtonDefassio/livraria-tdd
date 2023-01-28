@@ -1,11 +1,12 @@
 package io.wdefassio.livraria.api.application.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wdefassio.livraria.api.exceptions.BookAlreadyExistsException;
 import io.wdefassio.livraria.api.application.representation.BookDTO;
 import io.wdefassio.livraria.api.application.service.BookService;
 import io.wdefassio.livraria.api.domain.entity.Book;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,17 +37,20 @@ public class BookControllerTest {
     MockMvc mvc;
     @MockBean
     BookService bookService;
+    Book book;
+    BookDTO bookDTO;
+
+    @BeforeEach
+    public void init() {
+        createData();
+    }
 
     @Test
     @DisplayName("should create a book when correct params is provided")
     public void createBookSuccess() throws Exception {
-        BookDTO dto = new BookDTO("As aventuras", "Arthur", "001");
-        Book book = dto.toModel();
-        book.setId(10L);
-
         BDDMockito.given(bookService.save(Mockito.any(Book.class))).willReturn(book);
 
-        String json = new ObjectMapper().writeValueAsString(dto);
+        String json = new ObjectMapper().writeValueAsString(bookDTO);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(BOOK_API)
@@ -58,9 +62,9 @@ public class BookControllerTest {
         mvc.perform(request)
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("id").value(10L))
-                .andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
-                .andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
-                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()));
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value(bookDTO.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("author").value(bookDTO.getAuthor()))
+                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(bookDTO.getIsbn()));
 
 
     }
@@ -83,5 +87,32 @@ public class BookControllerTest {
 
     }
 
+    @Test
+    @DisplayName("should throw an error when try create a book with existent isbn")
+    public void createBookWithDuplicatedIsbn() throws Exception {
+
+        String json = new ObjectMapper().writeValueAsString(bookDTO);
+
+        BDDMockito.given(bookService.save(Mockito.any(Book.class))).willThrow(new BookAlreadyExistsException());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value("isbn already exists"));
+
+    }
+
+
+    public void createData() {
+        bookDTO = new BookDTO("As aventuras", "Arthur", "001");
+        book = bookDTO.toModel();
+        book.setId(10L);
+    }
 
 }

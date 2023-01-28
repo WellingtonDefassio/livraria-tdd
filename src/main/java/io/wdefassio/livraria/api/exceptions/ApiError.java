@@ -1,4 +1,4 @@
-package io.wdefassio.livraria.api.application.exceptions;
+package io.wdefassio.livraria.api.exceptions;
 
 import org.springframework.validation.BindingResult;
 
@@ -13,6 +13,11 @@ public class ApiError {
         bindingResult.getAllErrors().forEach(e -> {
             errors.add(e.getDefaultMessage());
         });
+    }
+
+    public ApiError(String message) {
+        this.errors = new ArrayList<>();
+        errors.add(message);
     }
 
     public List<String> getErrors() {
