@@ -8,5 +8,7 @@ public interface BookService {
     Book save(Book book);
     Boolean existsByIsbn(String isbn);
     Book findById(Long id);
-    void delete(Book book);
+    void delete(Long id);
+
+    Book update(Book book);
 }

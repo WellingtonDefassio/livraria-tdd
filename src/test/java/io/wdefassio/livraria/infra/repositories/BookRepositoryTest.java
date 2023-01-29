@@ -35,23 +35,56 @@ public class BookRepositoryTest {
     }
 
     @Test
-    @DisplayName("sould return a true when isbn exists in database")
+    @DisplayName("sould return a True when isbn exists in database")
     public void isbnExisting() {
         entityManager.persist(book);
         Boolean bookExists = bookRepository.existsByIsbn(book.getIsbn());
         Assertions.assertThat(bookExists).isTrue();
     }
+
     @Test
-    @DisplayName("sould return a  empty optinal when isbn does not exists in database")
+    @DisplayName("sould return False when isbn does not exists in database")
     public void isbnNotExisting() {
         Boolean bookExists = bookRepository.existsByIsbn(book.getIsbn());
         Assertions.assertThat(bookExists).isFalse();
     }
 
+    @Test
+    @DisplayName("sould return a book by id")
+    public void findBookById() {
+        entityManager.persist(book);
+        Optional<Book> bookOptional = bookRepository.findById(1L);
 
+        Assertions.assertThat(bookOptional.isPresent()).isTrue();
+
+    }
+
+    @Test
+    @DisplayName("should save a book")
+    public void saveBookSuccess() {
+        Book savedBook = bookRepository.save(book);
+
+        Assertions.assertThat(savedBook.getId()).isNotNull();
+
+    }
+
+    @Test
+    @DisplayName("should delete a book")
+    public void deleteBookSuccess() {
+        entityManager.persist(book);
+
+        Book foundBook = entityManager.find(Book.class, book.getId());
+
+        bookRepository.delete(foundBook);
+
+        Book deletedBook = entityManager.find(Book.class, book.getId());
+
+        Assertions.assertThat(deletedBook).isNull();
+
+    }
 
     public void initialValues() {
-        book = new Book(1L,"As aventuras test", "Manoel", "123");
+        book = new Book(null, "As aventuras test", "Manoel", "123");
     }
 
 }

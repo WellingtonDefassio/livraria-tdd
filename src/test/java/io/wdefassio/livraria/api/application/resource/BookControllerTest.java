@@ -153,6 +153,7 @@ public class BookControllerTest {
     @DisplayName("should be able to delete a existing book")
     public void deleteBookSuccess() throws Exception {
         Long id = 1L;
+
         BDDMockito.given(bookService.findById(id)).willReturn(book);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -170,7 +171,7 @@ public class BookControllerTest {
 
         Long id = 1L;
 
-        BDDMockito.given(bookService.findById(id)).willThrow(new BookNotFoundException());
+        BDDMockito.doThrow(new BookNotFoundException()).when(bookService).delete(id);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .delete(BOOK_API.concat("/" + id))
@@ -186,9 +187,10 @@ public class BookControllerTest {
     public void updateBookSuccess() throws Exception {
 
         Long id = 1L;
-        String json = new ObjectMapper().writeValueAsString(new BookDTO(null ,"book update", "author update", "0005"));
-
-        BDDMockito.given(bookService.findById(id)).willReturn(book);
+        BookDTO bookDTOUpdate = new BookDTO(null, "book update", "author update", "0005");
+        String json = new ObjectMapper().writeValueAsString(bookDTOUpdate);
+        bookDTOUpdate.setId(id);
+        BDDMockito.given(bookService.update(Mockito.any())).willReturn(bookDTOUpdate.toModel());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .put(BOOK_API.concat("/" + id))
@@ -212,7 +214,7 @@ public class BookControllerTest {
         Long id = 1L;
         String json = new ObjectMapper().writeValueAsString(new BookDTO(null ,"book update", "author update", "0005"));
 
-        BDDMockito.given(bookService.findById(Mockito.anyLong())).willThrow(new BookNotFoundException());
+        BDDMockito.given(bookService.update(Mockito.any())).willThrow(new BookNotFoundException());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .put(BOOK_API.concat("/" + id))

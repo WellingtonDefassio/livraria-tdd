@@ -35,19 +35,16 @@ public class BookController {
 
     @DeleteMapping("{id}")
     public ResponseEntity deleteBook(@PathVariable Long id) {
-        Book book = bookService.findById(id);
-        bookService.delete(book);
+
+        bookService.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("{id}")
     public BookDTO update(@Valid @RequestBody BookDTO dto, @PathVariable Long id) {
-
-        bookService.findById(id);
         dto.setId(id);
-        Book book = dto.toModel();
-        bookService.save(book);
-
+        Book book = bookService.update(dto.toModel());
         return mapper.map(book, BookDTO.class);
     }
 

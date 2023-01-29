@@ -17,7 +17,7 @@ public class BookServiceImp implements BookService {
 
     @Override
     public Book save(Book book) {
-        if(existsByIsbn(book.getIsbn()) && Objects.isNull(book.getId())) {
+        if (existsByIsbn(book.getIsbn()) && Objects.isNull(book.getId())) {
             throw new BookAlreadyExistsException();
         }
         return bookRepository.save(book);
@@ -25,7 +25,7 @@ public class BookServiceImp implements BookService {
 
     @Override
     public Boolean existsByIsbn(String isbn) {
-      return bookRepository.existsByIsbn(isbn);
+        return bookRepository.existsByIsbn(isbn);
     }
 
     @Override
@@ -35,8 +35,21 @@ public class BookServiceImp implements BookService {
     }
 
     @Override
-    public void delete(Book book) {
+    public void delete(Long id) {
+        Book book = findById(id);
         bookRepository.delete(book);
+    }
+
+    @Override
+    public Book update(Book book) {
+        Book bookById = findById(book.getId());
+        if (book.getIsbn().equals(bookById.getIsbn())) {
+            return save(book);
+        } else if (!existsByIsbn(book.getIsbn())) {
+            return save(book);
+        } else {
+            throw new BookAlreadyExistsException();
+        }
     }
 
 }
