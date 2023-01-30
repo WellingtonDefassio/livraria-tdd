@@ -1,6 +1,5 @@
 package io.wdefassio.livraria.infra.repositories;
 
-import io.wdefassio.livraria.api.application.service.BookServiceImp;
 import io.wdefassio.livraria.api.domain.entity.Book;
 import io.wdefassio.livraria.api.infra.repositories.BookRepository;
 import org.assertj.core.api.Assertions;

@@ -1,9 +1,6 @@
 package io.wdefassio.livraria.api.exceptions.handle;
 
-import io.wdefassio.livraria.api.exceptions.ApiError;
-import io.wdefassio.livraria.api.exceptions.BookAlreadyExistsException;
-import io.wdefassio.livraria.api.exceptions.BookAlreadyLoanException;
-import io.wdefassio.livraria.api.exceptions.BookNotFoundException;
+import io.wdefassio.livraria.api.exceptions.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,6 +30,10 @@ public class HandleControllerExceptions {
     public ResponseEntity<?> bookAlreadyLoan(BookAlreadyLoanException ex, HttpServletRequest request) {
         String message = ex.getMessage();
         return ResponseEntity.badRequest().body(new ApiError(message));
+    }
+    @ExceptionHandler(LoanNotFoundException.class)
+    public ResponseEntity<?> bookAlreadyLoan(LoanNotFoundException ex, HttpServletRequest request) {
+        return ResponseEntity.notFound().build();
     }
 
 

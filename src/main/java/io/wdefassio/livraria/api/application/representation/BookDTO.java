@@ -27,4 +27,8 @@ public class BookDTO {
     public Book toModel() {
         return new Book(id, title, author, isbn);
     }
+
+    public static BookDTO fromModel(Book book) {
+        return new BookDTO(book.getId(), book.getTitle(), book.getAuthor(), book.getIsbn());
+    }
 }

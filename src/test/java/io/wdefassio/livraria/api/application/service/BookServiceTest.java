@@ -202,6 +202,33 @@ public class BookServiceTest {
 
     }
 
+    @Test
+    @DisplayName("should be able to find a Book by isbn")
+    public void findByIsbnSuccess() {
+        Long id = 1L;
+        Mockito.when(repository.findBookByIsbn(Mockito.anyString())).thenReturn(Optional.of(book));
+
+        Book bookByIsbn = bookService.getBookByIsbn("123");
+
+      Assertions.assertThat(bookByIsbn.getIsbn()).isEqualTo(book.getIsbn());
+      Assertions.assertThat(bookByIsbn.getId()).isEqualTo(book.getId());
+      Assertions.assertThat(bookByIsbn.getAuthor()).isEqualTo(book.getAuthor());
+      Assertions.assertThat(bookByIsbn.getTitle()).isEqualTo(book.getTitle());
+      Mockito.verify(repository, Mockito.times(1)).findBookByIsbn("123");
+    }
+
+    @Test
+    @DisplayName("should throw when a book is not found")
+    public void findByIsbnFail() {
+        Long id = 1L;
+        Mockito.when(repository.findBookByIsbn(Mockito.anyString())).thenReturn(Optional.empty());
+        Throwable exception = Assertions.catchThrowable(() -> bookService.getBookByIsbn("123"));
+        Assertions.assertThat(exception).isInstanceOf(BookNotFoundException.class)
+                .hasMessage("book not found");
+        Mockito.verify(repository, Mockito.never()).save(book);
+    }
+
+
 
     public void initialValues() {
         book = new Book(1L, "As aventuras test", "Manoel", "123");

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,9 @@ public class Book {
     private String title;
     private String author;
     private String isbn;
+
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private List<Loan> loans;
 
     public Book(Long id, String title, String author, String isbn) {
         this.id = id;
