@@ -5,9 +5,14 @@ import io.wdefassio.livraria.api.exceptions.BookAlreadyExistsException;
 import io.wdefassio.livraria.api.exceptions.BookNotFoundException;
 import io.wdefassio.livraria.api.infra.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,13 @@ public class BookServiceImp implements BookService {
     public Boolean existsByIsbn(String isbn) {
         return bookRepository.existsByIsbn(isbn);
     }
+
+    @Override
+    public Book getBookByIsbn(String isbn) {
+        Optional<Book> optionalBook = bookRepository.findBookByIsbn(isbn);
+        return optionalBook.orElseThrow(BookNotFoundException::new);
+    }
+
 
     @Override
     public Book findById(Long id) {
@@ -50,6 +62,17 @@ public class BookServiceImp implements BookService {
         } else {
             throw new BookAlreadyExistsException();
         }
+    }
+
+    @Override
+    public Page<Book> find(Book book, Pageable page) {
+        Example<Book> example = Example.of(book, ExampleMatcher
+                .matching()
+                .withIgnoreCase()
+                .withIgnoreNullValues()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+
+        return bookRepository.findAll(example, page);
     }
 
 }
