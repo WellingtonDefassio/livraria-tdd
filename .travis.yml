@@ -1,0 +1,4 @@
+language: java
+jdk:
+  - oraclejdk17
+dist: trusty
