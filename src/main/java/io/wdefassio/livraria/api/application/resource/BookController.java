@@ -2,8 +2,11 @@ package io.wdefassio.livraria.api.application.resource;
 
 import io.wdefassio.livraria.api.application.representation.BookDTO;
 import io.wdefassio.livraria.api.application.representation.FilterBookRequest;
+import io.wdefassio.livraria.api.application.representation.LoanDTO;
 import io.wdefassio.livraria.api.application.service.BookService;
+import io.wdefassio.livraria.api.application.service.LoanService;
 import io.wdefassio.livraria.api.domain.entity.Book;
+import io.wdefassio.livraria.api.domain.entity.Loan;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookService bookService;
+    private final LoanService loanService;
     private final ModelMapper mapper;
 
     @PostMapping
@@ -61,7 +65,13 @@ public class BookController {
         return new PageImpl<BookDTO>(dtoList, page, result.getTotalElements());
     }
 
-
+    @GetMapping("{id}/loans")
+    public Page<LoanDTO> loansByBook(@PathVariable Long id, Pageable page) {
+        Book book = bookService.findById(id);
+        Page<Loan> loanPage = loanService.getLoansByBook(book, page);
+        List<LoanDTO> loanDTOS = loanPage.getContent().stream().map(LoanDTO::fromModel).toList();
+        return new PageImpl<>(loanDTOS, page, loanPage.getTotalElements());
+    }
 
 
 }

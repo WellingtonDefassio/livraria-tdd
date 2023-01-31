@@ -1,6 +1,7 @@
 package io.wdefassio.livraria.api.application.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wdefassio.livraria.api.application.service.LoanService;
 import io.wdefassio.livraria.api.exceptions.BookAlreadyExistsException;
 import io.wdefassio.livraria.api.application.representation.BookDTO;
 import io.wdefassio.livraria.api.application.service.BookService;
@@ -44,6 +45,8 @@ public class BookControllerTest {
     MockMvc mvc;
     @MockBean
     BookService bookService;
+    @MockBean
+    LoanService loanService;
     Book book;
     BookDTO bookDTO;
 
@@ -216,7 +219,7 @@ public class BookControllerTest {
     public void updateBookFail() throws Exception {
 
         Long id = 1L;
-        String json = new ObjectMapper().writeValueAsString(new BookDTO(null ,"book update", "author update", "0005"));
+        String json = new ObjectMapper().writeValueAsString(new BookDTO(null, "book update", "author update", "0005"));
 
         BDDMockito.given(bookService.update(Mockito.any())).willThrow(new BookNotFoundException());
 
@@ -236,7 +239,7 @@ public class BookControllerTest {
     public void findBookSuccess() throws Exception {
 
         BDDMockito.given(bookService.find(Mockito.any(Book.class), Mockito.any(Pageable.class)))
-                .willReturn(new PageImpl<Book>(Arrays.asList(book), PageRequest.of(0,100), 1));
+                .willReturn(new PageImpl<Book>(Arrays.asList(book), PageRequest.of(0, 100), 1));
 
         String queryString = String.format("?title=%s&author=%s&page=0&size=100", book.getTitle(), book.getAuthor());
 

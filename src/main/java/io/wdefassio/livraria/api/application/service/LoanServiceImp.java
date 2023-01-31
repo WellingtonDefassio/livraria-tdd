@@ -13,6 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class LoanServiceImp implements LoanService {
@@ -40,7 +43,7 @@ public class LoanServiceImp implements LoanService {
 
     @Override
     public Page<Loan> find(LoanFilterDTO filter, Pageable page) {
-        Loan loan = new Loan(null, filter.getCustomer(), new Book(null, null, null, filter.getIsbn()), null, null);
+        Loan loan = new Loan(null, filter.getCustomer(), null, new Book(null, null, null, filter.getIsbn()), null, null);
         Example<Loan> example = Example.of(loan, ExampleMatcher
                 .matching()
                 .withIgnoreCase()
@@ -49,5 +52,18 @@ public class LoanServiceImp implements LoanService {
         );
 
         return loanRepository.findAll(example, page);
+    }
+
+    @Override
+    public Page<Loan> getLoansByBook(Book book, Pageable page) {
+        return loanRepository.findByBook(book, page);
+    }
+
+    @Override
+    public List<Loan> getAllLateLoans() {
+        final Integer loanDays = 4;
+        LocalDate threeDaysAgo = LocalDate.now().minusDays(loanDays);
+
+        return loanRepository.findByLoanDateLessThanAndNotReturned(threeDaysAgo);
     }
 }

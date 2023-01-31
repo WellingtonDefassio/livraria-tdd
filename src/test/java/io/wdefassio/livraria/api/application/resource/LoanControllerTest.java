@@ -187,12 +187,10 @@ public class LoanControllerTest {
 
 
 
-
-
     public void createData() {
-        loanDTO = new LoanDTO(1L, "123", "Joe", new BookDTO(1L, "As aventuras", "Arthur", "123"));
+        loanDTO = new LoanDTO(1L, "123", "Joe", "any@enmail", new BookDTO(1L, "As aventuras", "Arthur", "123"));
         book = new Book(1L, "As aventuras", "Arthur", "123");
-        loan = new Loan(1L, "Arthur", book, LocalDate.now(), Boolean.TRUE);
+        loan = new Loan(1L, "Arthur", "any@email.com",  book, LocalDate.now(), Boolean.TRUE);
     }
 
 }

@@ -135,7 +135,7 @@ public class LoanServiceTest {
 
     public void initialValues() {
         book = new Book(1L, "As aventuras test", "Manoel", "123");
-        loan = new Loan(1L, "Fulano", book, LocalDate.now(), Boolean.FALSE);
+        loan = new Loan(1L, "Fulano", "any@email.com", book, LocalDate.now(), Boolean.FALSE);
         loanFilter = new LoanFilterDTO(loan.getBook().getIsbn(), loan.getCustomer());
     }
 

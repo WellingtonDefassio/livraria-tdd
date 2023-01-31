@@ -2,6 +2,7 @@ package io.wdefassio.livraria.infra.repositories;
 
 import io.wdefassio.livraria.api.domain.entity.Book;
 import io.wdefassio.livraria.api.infra.repositories.BookRepository;
+import io.wdefassio.livraria.api.infra.repositories.LoanRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,10 +23,10 @@ public class BookRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
-
     @Autowired
     BookRepository bookRepository;
-
+    @Autowired
+    LoanRepository loanRepository;
     Book book;
 
     @BeforeEach
